@@ -1,5 +1,5 @@
 import { Entity, BaseEntity, PrimaryGeneratedColumn, Column } from "typeorm";
-import { ObjectType, Field, Int } from "type-graphql";
+import { ObjectType, Field, Int, InputType } from "type-graphql";
 
 @Entity()
 @ObjectType()
@@ -14,9 +14,21 @@ export class Country extends BaseEntity {
 
   @Column()
   @Field()
-  nom: string;
+  name: string;
 
   @Column()
+  @Field()
+  emoji: string;
+}
+
+@InputType()
+export class NewCountryInput {
+  @Field()
+  code: string;
+
+  @Field()
+  name: string;
+
   @Field()
   emoji: string;
 }

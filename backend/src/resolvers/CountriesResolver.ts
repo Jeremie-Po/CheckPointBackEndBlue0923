@@ -7,7 +7,7 @@ import {
   Authorized,
   Ctx,
 } from "type-graphql";
-import { Country } from "../entities/country";
+import { Country, NewCountryInput } from "../entities/country";
 import { GraphQLError } from "graphql";
 // import { validate } from "class-validator";
 import { ILike, In } from "typeorm";
@@ -24,6 +24,19 @@ class CountriesResolver {
   @Query(() => [Country])
   async countries() {
     return Country.find({});
+  }
+
+  @Mutation(() => Country)
+  async createCountry(@Arg("data") data: NewCountryInput) {
+    const { code, name, emoji } = data;
+    const country = await Country.findOneBy({ name });
+
+    if (country) {
+      throw new GraphQLError(`Country already exist, fait pas trop le malin.`);
+    }
+    const newCountry = await Country.create({ name, code, emoji }).save();
+
+    return newCountry;
   }
 
   //   @Query(() => Ad)
