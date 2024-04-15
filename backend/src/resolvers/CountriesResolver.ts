@@ -12,19 +12,49 @@ import { GraphQLError } from "graphql";
 // import { validate } from "class-validator";
 import { ILike, In } from "typeorm";
 // import { ContextType } from "../types";
-// import {
-//   invalidDataError,
-//   notFoundError,
-//   unauthaurizedError,
-//   unauthenticatedError,
-// } from "../utils";
+import { notFoundError } from "../utils";
 
 @Resolver(Country)
 class CountriesResolver {
   @Query(() => [Country])
-  async countries() {
-    return Country.find({});
+  async countries(
+    @Arg("countryId", () => Int, { nullable: true }) countryId?: number
+  ) {
+    return Country.find({
+      relations: { continent: true },
+      where: {
+        continent: {
+          id: countryId,
+        },
+      },
+    });
   }
+
+  @Query(() => [Country])
+  async getCountryByCode(@Arg("countryCode", () => String) code: string) {
+    const country = await Country.findOne({
+      where: { code },
+    });
+    if (!country) throw notFoundError();
+    return country;
+  }
+  @Query(() => [Country])
+  async getCountryById(@Arg("countryId", () => Int) id: number) {
+    const country = await Country.findOne({
+      where: { id },
+    });
+    if (!country) throw notFoundError();
+    return country;
+  }
+
+  // async getAdById(@Arg("adId", () => Int) id: number) {
+  //   const ad = await Ad.findOne({
+  //     where: { id },
+  //     relations: { category: true, tags: true, owner: true },
+  //   });
+  //   if (!ad) throw notFoundError();
+  //   return ad;
+  // }
 
   @Mutation(() => Country)
   async createCountry(@Arg("data") data: NewCountryInput) {

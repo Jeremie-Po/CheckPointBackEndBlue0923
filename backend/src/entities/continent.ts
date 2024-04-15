@@ -3,36 +3,24 @@ import {
   BaseEntity,
   PrimaryGeneratedColumn,
   Column,
-  ManyToOne,
+  OneToMany,
 } from "typeorm";
 import { ObjectType, Field, Int, InputType } from "type-graphql";
-import { Continent } from "./continent";
+import { Country } from "./country";
 
 @Entity()
 @ObjectType()
-export class Country extends BaseEntity {
+export class Continent extends BaseEntity {
   @PrimaryGeneratedColumn()
   @Field(() => Int)
   id: number;
 
   @Column()
   @Field()
-  code: string;
+  continent: string;
 
-  @Column()
-  @Field()
-  name: string;
-
-  @Column()
-  @Field()
-  emoji: string;
-
-  @ManyToOne(() => Continent, (c) => c.countries, {
-    cascade: true,
-    onDelete: "CASCADE",
-  })
-  @Field()
-  continent: Continent;
+  @OneToMany(() => Country, (c) => c.continent)
+  countries: Country;
 }
 
 @InputType()
